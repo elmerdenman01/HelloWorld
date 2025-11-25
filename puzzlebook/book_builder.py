@@ -224,6 +224,38 @@ class PuzzleBookBuilder:
             border: 1px solid #ddd;
         }
         
+        .crossword-table {
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        
+        .crossword-cell {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #333;
+            text-align: center;
+            vertical-align: top;
+            position: relative;
+            padding: 2px;
+        }
+        
+        .crossword-cell.white-cell {
+            background-color: #fff;
+        }
+        
+        .crossword-cell.black-cell {
+            background-color: #000;
+            border: 1px solid #000;
+        }
+        
+        .cell-number {
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            font-size: 8px;
+            font-weight: bold;
+        }
+        
         /* Maze styles */
         .maze-grid {
             border-collapse: collapse;
