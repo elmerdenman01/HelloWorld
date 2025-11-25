@@ -1,0 +1,3 @@
+"""
+Puzzle type implementations
+"""
