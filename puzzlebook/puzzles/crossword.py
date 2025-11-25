@@ -75,10 +75,14 @@ class CrosswordPuzzle(Puzzle):
             for num, clue_data in clues[direction].items():
                 clue_text, answer, row, col = clue_data
                 if direction == 'across':
+                    # For across words: need columns up to col + len(answer) - 1
                     max_col = max(max_col, col + len(answer))
+                    # For across words: need rows up to row
                     max_row = max(max_row, row + 1)
                 else:  # down
+                    # For down words: need rows up to row + len(answer) - 1
                     max_row = max(max_row, row + len(answer))
+                    # For down words: need columns up to col
                     max_col = max(max_col, col + 1)
         
         # Create grid filled with None (black squares)
@@ -133,7 +137,9 @@ class CrosswordPuzzle(Puzzle):
                     # White square with optional number
                     cell_num = ''
                     if (i, j) in clue_numbers:
-                        cell_num = ','.join(clue_numbers[(i, j)])
+                        # Get unique clue numbers and join them
+                        unique_nums = sorted(set(clue_numbers[(i, j)]), key=lambda x: int(x))
+                        cell_num = ','.join(unique_nums)
                     html += f'<td class="crossword-cell white-cell">'
                     if cell_num:
                         html += f'<span class="cell-number">{cell_num}</span>'
