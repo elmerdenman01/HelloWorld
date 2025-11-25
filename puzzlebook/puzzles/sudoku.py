@@ -2,7 +2,7 @@
 Sudoku puzzle generator
 """
 import random
-from typing import Dict, Any, List
+from typing import Dict, Any
 from ..puzzle_base import Puzzle, PuzzleRegistry
 
 
@@ -14,10 +14,29 @@ class SudokuPuzzle(Puzzle):
     def puzzle_type(self) -> str:
         return "Sudoku"
     
+    def _is_valid_placement(self, grid, row, col, num):
+        """Check if placing num at grid[row][col] is valid"""
+        # Check row
+        if num in grid[row]:
+            return False
+        
+        # Check column
+        if num in [grid[i][col] for i in range(9)]:
+            return False
+        
+        # Check 3x3 box
+        box_row, box_col = 3 * (row // 3), 3 * (col // 3)
+        for i in range(box_row, box_row + 3):
+            for j in range(box_col, box_col + 3):
+                if grid[i][j] == num:
+                    return False
+        
+        return True
+    
     def generate(self) -> Dict[str, Any]:
         """Generate a Sudoku puzzle"""
         # Create a simple 9x9 grid with some numbers filled in
-        # This is a simplified version - a real implementation would ensure valid Sudoku rules
+        # This implementation ensures valid Sudoku rules
         grid = [[0 for _ in range(9)] for _ in range(9)]
         
         # Difficulty determines how many cells to fill
@@ -30,12 +49,19 @@ class SudokuPuzzle(Puzzle):
         
         # Fill random cells with valid numbers
         filled = 0
-        while filled < cells_to_fill:
+        attempts = 0
+        max_attempts = cells_to_fill * 100  # Prevent infinite loops
+        
+        while filled < cells_to_fill and attempts < max_attempts:
             row = random.randint(0, 8)
             col = random.randint(0, 8)
-            if grid[row][col] == 0:
-                grid[row][col] = random.randint(1, 9)
+            num = random.randint(1, 9)
+            
+            if grid[row][col] == 0 and self._is_valid_placement(grid, row, col, num):
+                grid[row][col] = num
                 filled += 1
+            
+            attempts += 1
         
         return {
             'grid': grid,

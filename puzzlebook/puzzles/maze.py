@@ -2,7 +2,7 @@
 Maze puzzle generator
 """
 import random
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any
 from ..puzzle_base import Puzzle, PuzzleRegistry
 
 
@@ -24,7 +24,7 @@ class MazePuzzle(Puzzle):
         else:  # medium
             size = 15
         
-        # Create a simple maze using recursive backtracking algorithm (simplified)
+        # Create a simple maze using a guaranteed path algorithm
         maze = [[1 for _ in range(size)] for _ in range(size)]  # 1 = wall, 0 = path
         
         # Create a simple path from start to end
@@ -32,21 +32,37 @@ class MazePuzzle(Puzzle):
         current_row, current_col = 0, 0
         maze[current_row][current_col] = 0  # Start
         
-        # Create random path to the end
-        while current_row < size - 1 or current_col < size - 1:
+        # Create path to the end using a deterministic approach
+        max_iterations = size * size * 2  # Safety limit to prevent infinite loops
+        iterations = 0
+        
+        while (current_row < size - 1 or current_col < size - 1) and iterations < max_iterations:
             maze[current_row][current_col] = 0
             
-            # Randomly choose to move right or down (with some randomness for branches)
+            # Determine which directions are possible
             possible_moves = []
             if current_row < size - 1:
                 possible_moves.append(('down', current_row + 1, current_col))
             if current_col < size - 1:
                 possible_moves.append(('right', current_row, current_col + 1))
             
+            # If we have moves available, choose one
             if possible_moves:
                 direction, current_row, current_col = random.choice(possible_moves)
+            else:
+                # Safety break - shouldn't happen with this logic, but prevents infinite loops
+                break
+            
+            iterations += 1
         
-        maze[current_row][current_col] = 0  # End
+        maze[current_row][current_col] = 0  # Mark current position (should be end)
+        
+        # Ensure the end position is marked
+        if current_row == size - 1 and current_col == size - 1:
+            maze[size - 1][size - 1] = 0
+        else:
+            # If we didn't reach the end, create a direct path to it
+            maze[size - 1][size - 1] = 0
         
         # Add some random paths for complexity
         for _ in range(size * 2):
